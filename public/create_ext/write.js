@@ -1,10 +1,10 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js';
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
-import { getDatabase, ref, child, push, set } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js";
+//import { getDatabase, ref, child, push, set } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js";
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js';
 import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app-check.js";
 import { getPerformance } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-performance.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+import { getFirestore, doc, setDoc, collection } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD-21i_c71ZztSOOAVHg2Y2REK3031UzGM",
@@ -18,7 +18,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+//const database = getDatabase(app);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const perf = getPerformance(app);
@@ -49,43 +49,43 @@ onAuthStateChanged(auth, (user) => {
           }else{
     
             if(document.getElementById("cat-root-fld").value == 'add_new'){
-              const newPostKey = push(child(ref(database), "/user_data/" + uid + "/category/" + document.getElementById("cat-root-fld").value)).key;
-        
-              set(ref(database, "user_data/" + uid + '/root/' + newPostKey), {
+
+
+              let link = document.getElementById('custom-root-fld').value.toLowerCase().replaceAll(" ", "_");
+              
+              const ref_category = doc(firestore, "user_list/" + uid + "/root/" + link);
+              const docData_cat = {
                 img: document.getElementById('img-root-fld').value,
-                title: document.getElementById('coustom-root-fld').value,
-                link: document.getElementById('coustom-root-fld').value.toLowerCase().replaceAll(" ", "_")
-              });
-    
-              //Gets the key for new push
-              const newPostKey2 = push(child(ref(database), "/user_data/"+ uid +"/category/" + document.getElementById("cat-root-fld").value)).key;
-    
-              set(ref(database, "user_data/" + uid +'/category/' + document.getElementById("coustom-root-fld").value + '/' + newPostKey2), {
+                title: document.getElementById('custom-root-fld').value,
+                link: link
+              };
+              setDoc(ref_category, docData_cat);
+
+              // Add a new document with a generated id
+              const ref_item = doc(collection(firestore, "user_list/" + uid + "/category/cat_doc/" + link));
+              const docData_item = {
                 img: document.getElementById('img-root-fld').value,
                 title: document.getElementById('name-root-fld').value,
                 price: document.getElementById('price-root-fld').value,
                 link: document.getElementById('link-root-fld').value
-              });
-    
-    
+              };
+              setDoc(ref_item, docData_item);
             }else{
-              //Gets the key for new push
-              const newPostKey = push(child(ref(database), "/user_data/"+ uid +"/category/" + document.getElementById("cat-root-fld").value)).key;
-        
-              set(ref(database, "user_data/" + uid +'/category/' + document.getElementById("cat-root-fld").value + '/' + newPostKey), {
+              // Add a new document with a generated id
+              const ref_item = doc(collection(firestore, "user_list/" + uid + "/category/cat_doc/" + document.getElementById('cat-root-fld').value));
+              const docData_item = {
                 img: document.getElementById('img-root-fld').value,
                 title: document.getElementById('name-root-fld').value,
                 price: document.getElementById('price-root-fld').value,
                 link: document.getElementById('link-root-fld').value
-              });
+              };
+              setDoc(ref_item, docData_item);
             }
-            console.log("DATABASE UPDATED");
             //clears auto saved values after submit
             localStorage.removeItem("img");
             localStorage.removeItem("name");
             localStorage.removeItem("price");
             localStorage.removeItem("link");
-            
           }
         });
     }else{
@@ -95,6 +95,7 @@ onAuthStateChanged(auth, (user) => {
       window.location.pathname = "login/index.html";
     }
 });
+
 
 
 document.getElementById('img-root-fld').addEventListener('change', () => {
@@ -113,9 +114,9 @@ document.getElementById('link-root-fld').addEventListener('change', () => {
 document.getElementById('cat-root-fld').addEventListener('change', () => {
     localStorage.setItem("category", document.getElementById("cat-root-fld").value);
     if(document.getElementById('cat-root-fld').value == "add_new"){
-      document.getElementById('coustom-root-fld').style.display = "block";
+      document.getElementById('custom-root-fld').style.display = "block";
     }else{
-      document.getElementById('coustom-root-fld').style.display = "none";
+      document.getElementById('custom-root-fld').style.display = "none";
     }
 
     if(document.getElementById('cat-root-fld') != "category"){

@@ -1,10 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js";
+import { getFirestore, FirestoreDataConverter, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
 import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app-check.js";
 import { getPerformance } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-performance.js"
 
-
+console.log("Load_log_0");
 window.onload = () => {
     const firebaseConfig = {
         apiKey: "AIzaSyD-21i_c71ZztSOOAVHg2Y2REK3031UzGM",
@@ -21,6 +22,7 @@ window.onload = () => {
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
       const database = getDatabase(app);
+      const firestore = getFirestore(app);
       const perf = getPerformance(app);
       const appCheck = initializeAppCheck(app, {
         provider: new ReCaptchaV3Provider('6Lcn0e0oAAAAAF0WmoPVhQfTElJed3RaSEjTMdeY'),
@@ -34,8 +36,54 @@ window.onload = () => {
 
       // Get the last element of the array.
       var uid = urlParts[urlParts.length - 1];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      async function readDB(){
+        console.log("READING DATABASE");
+        const querySnapshot = await getDocs(collection(firestore, "user_list/" + uid + "/category/cat_doc/books"));
+        console.log("user_list/" + uid + "/root/");
+        console.log("READING DATABASE_2");
+        querySnapshot.forEach((doc) => {
+          console.log(`${doc.id} => ${doc.data()}`);
+        });
+      }
+
+      readDB();
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
-      const dbref = ref(database,"user_data/" + uid + '/root/');
+      /*const dbref = ref(database,"user_data/" + uid + '/root/');
       onValue(dbref, (snapshot) => {
         const data = snapshot.val();
   
@@ -87,7 +135,7 @@ window.onload = () => {
             console.error("ERRoR: element is equal to null");
           }
         }
-      });
+      });*/
   };
 
 /*
